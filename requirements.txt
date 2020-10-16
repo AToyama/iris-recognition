@@ -1,0 +1,18 @@
+cv2
+G6_iris_recognition
+
+
+
+imgs/
+python/
+    
+    main/
+        run.py
+        iris.py
+
+    tests/
+        test.py
+        img.bmp
+        img2.bmp
+
+
