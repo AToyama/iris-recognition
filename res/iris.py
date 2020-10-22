@@ -33,7 +33,7 @@ class Iris:
 
         return imgf
     
-    def detectROI(self, img, template, T):
+    def detectROI(self, img, template):
 
         #abre o template e o converte para níveis de cinza
         template = cv.GaussianBlur(template, (7, 7), 0)
@@ -45,18 +45,56 @@ class Iris:
         match = cv.matchTemplate(img, template, cv.TM_CCOEFF_NORMED)
 
         #obtém as posições onde o template gerou níveis de acurácia maiores que um limiar
-        threshold = T
+        threshold = 0.6
         position = np.where(match >= threshold)
         last_pos = (0,0)
+        iris = False
 
         #desenha os retângulos com as regiões encontradas
         for point in zip(*position[::-1]): 
             if abs(point[0] - last_pos[0]) < 20 or abs(point[1] - last_pos[1]) < 20:
                 continue
         
-        cv.rectangle(img, point, (point[0] + width, point[1] + height), (0, 204, 153), 5)
-        last_pos = point
+            cv.rectangle(img, (point[0]-60, point[1]-40), (point[0] + width + 60, point[1] + height + 60), (0, 204, 153), 5)
+            last_pos = point
+            iris = True
 
 
-        return img
+        return img, iris
+
+    def cropROI(self, img, template):
+
+        #abre o template e o converte para níveis de cinza
+        template = cv.GaussianBlur(template, (7, 7), 0)
+
+        #comprimento e largura do template
+        width,height=template.shape
+
+        #template matching, que devolve o nível de acurácia
+        match = cv.matchTemplate(img, template, cv.TM_CCOEFF_NORMED)
+
+        #obtém as posições onde o template gerou níveis de acurácia maiores que um limiar
+        threshold = 0.6
+        position = np.where(match >= threshold)
+        last_pos = (0,0)
+        iris = False
+
+        #desenha os retângulos com as regiões encontradas
+        for point in zip(*position[::-1]):
+            if abs(point[0] - last_pos[0]) < 20 or abs(point[1] - last_pos[1]) < 20:
+                continue
+            
+            y1 = point[1] - 40
+            x1 = point[0] - 80
+            y2 = point[1] + height + 80
+            x2 = point[0] + width + 80
+
+            # cv.rectangle(img, (point[0]-70, point[1]-70), (point[0] + width + 70, point[1] + height + 70), (0, 204, 153), 5)
+            img = img[y1:y2, x1:x2]
+            last_pos = point
+            iris = True
+            break
+
+
+        return img, iris
  
