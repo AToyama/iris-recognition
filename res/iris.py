@@ -32,4 +32,31 @@ class Iris:
                     imgf[i, j] += M
 
         return imgf
+    
+    def detectROI(self, img, template, T):
+
+        #abre o template e o converte para níveis de cinza
+        template = cv.GaussianBlur(template, (7, 7), 0)
+
+        #comprimento e largura do template
+        width,height=template.shape
+
+        #template matching, que devolve o nível de acurácia
+        match = cv.matchTemplate(img, template, cv.TM_CCOEFF_NORMED)
+
+        #obtém as posições onde o template gerou níveis de acurácia maiores que um limiar
+        threshold = T
+        position = np.where(match >= threshold)
+        last_pos = (0,0)
+
+        #desenha os retângulos com as regiões encontradas
+        for point in zip(*position[::-1]): 
+            if abs(point[0] - last_pos[0]) < 20 or abs(point[1] - last_pos[1]) < 20:
+                continue
+        
+        cv.rectangle(img, point, (point[0] + width, point[1] + height), (0, 204, 153), 5)
+        last_pos = point
+
+
+        return img
  
