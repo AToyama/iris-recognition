@@ -47,22 +47,24 @@ class Iris:
         match = cv.matchTemplate(imgD, template, cv.TM_CCOEFF_NORMED)
 
         #obtém as posições onde o template gerou níveis de acurácia maiores que um limiar
-        threshold = 0.6
+        threshold = 0.8
         position = np.where(match >= threshold)
         last_pos = (0,0)
         iris = False
+        rects = 0
 
         #desenha os retângulos com as regiões encontradas
         for point in zip(*position[::-1]): 
             if abs(point[0] - last_pos[0]) < 20 or abs(point[1] - last_pos[1]) < 20:
                 continue
         
-            cv.rectangle(imgD, (point[0]-60, point[1]-40), (point[0] + width + 60, point[1] + height + 60), (0, 204, 153), 5)
+            cv.rectangle(imgD, (point[0]-120, point[1]-60), (point[0] + width + 120, point[1] + height + 120), (0, 204, 153), 5)
             last_pos = point
             iris = True
+            rects += 1
 
 
-        return imgD, iris
+        return imgD, iris, rects
 
     def cropROI(self, img, template):
 
@@ -78,7 +80,7 @@ class Iris:
         match = cv.matchTemplate(imgC, template, cv.TM_CCOEFF_NORMED)
 
         #obtém as posições onde o template gerou níveis de acurácia maiores que um limiar
-        threshold = 0.6
+        threshold = 0.8
         position = np.where(match >= threshold)
         last_pos = (0,0)
         iris = False
@@ -88,10 +90,10 @@ class Iris:
             if abs(point[0] - last_pos[0]) < 20 or abs(point[1] - last_pos[1]) < 20:
                 continue
             
-            y1 = point[1] - 40
-            x1 = point[0] - 80
-            y2 = point[1] + height + 80
-            x2 = point[0] + width + 80
+            y1 = point[1] - 60
+            x1 = point[0] - 120
+            y2 = point[1] + height + 100
+            x2 = point[0] + width + 120
 
             # cv.rectangle(imgC, (point[0]-70, point[1]-70), (point[0] + width + 70, point[1] + height + 70), (0, 204, 153), 5)
             imgC = imgC[y1:y2, x1:x2]
